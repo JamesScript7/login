@@ -1,6 +1,23 @@
+var Sequelize = require('sequelize');
 var express = require('express');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+
+var dbFileName = "app.db";
+var devDatabaseURL = "sqlite://" + dbFileName;
+var sequelize = new Sequelize(process.env.DATABASE_URL || devDatabaseURL);
+
+var Account = sequelize.define('Account', {
+  username: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    unique: true
+  },
+  password: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  }
+});
 
 var app = express();
 
@@ -16,12 +33,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.post('/login', function(req, res) {
-  if (req.body.username == "daniel") {
-    req.session.userID = 123;
-    res.send(`Logged in as ${req.body.username}!`);
-  } else {
+  Account.findOne({
+    where: { username: req.body.username }
+  }).then(function(row) {
+    console.log(row.dataValues);
+
+    req.session.userID = row.dataValues.id;
+    res.send(`Logged in as ${row.dataValues.username}!`);
+  }).catch(function(err) {
+    console.error(err);
     res.status(401).send("Could not login!");
-  }
+  });
 });
 
 app.get('/logout', function(req, res) {
@@ -43,6 +65,8 @@ app.get("/", function(req, res) {
   res.send("Welcome to my private lair!");
 });
 
-app.listen(app.get('port'), function() {
-  console.log("Server started on port " + app.get('port'));
+sequelize.sync().then(function() {
+  app.listen(app.get('port'), function() {
+    console.log("Server started on port " + app.get('port'));
+  });
 });
