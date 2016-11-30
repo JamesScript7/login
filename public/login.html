@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login Page</title>
+
+<style>
+
+body {
+  font-size: 18pt;
+}
+.login-form {
+  display: table;
+  margin: 1em auto 0;
+  padding: 1.25em 0.75em;
+  border: 2px double;
+}
+.login-form label {
+  display: block;
+  margin-bottom: 0.25em;
+}
+.login-form span {
+  display: inline-block;
+  min-width: 6em;
+}
+.login-form .actions {
+  margin-top: 1em;
+  text-align: center;
+}
+</style>
+</head>
+
+<body>
+  <form class="login-form" action="/login" method="post">
+    <label>
+      <span>Username:</span>
+      <input type="text" name= "username" />
+    </label>
+    <label>
+      <span>Password:</span>
+      <input type= "password" name="password" />
+    </label>
+
+    <div class="actions">
+      <input type="submit" value="Login" />
+    </div>
+  </form>
+</body>
+</html>
