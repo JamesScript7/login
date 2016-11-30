@@ -1,5 +1,5 @@
-ExpressJS Login v0.2
-Sessions, with DB, no password
+ExpressJS Login v0.3
+Sessions, with DB and password check
 
 Run:
 $ node seed_db.js

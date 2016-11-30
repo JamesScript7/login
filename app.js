@@ -2,6 +2,7 @@ var Sequelize = require('sequelize');
 var express = require('express');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var passwordHash = require('password-hash');
 
 var dbFileName = "app.db";
 var devDatabaseURL = "sqlite://" + dbFileName;
@@ -38,8 +39,15 @@ app.post('/login', function(req, res) {
   }).then(function(row) {
     console.log(row.dataValues);
 
-    req.session.userID = row.dataValues.id;
-    res.send(`Logged in as ${row.dataValues.username}!`);
+    var correctPW = passwordHash.verify(req.body.password, row.dataValues.password);
+
+    if (correctPW) {
+      req.session.userID = row.dataValues.id;
+      res.send(`Logged in as ${row.dataValues.username}!`);
+    } else {
+      console.error("Incorrect password");
+      res.status(401).send("Could not login!");
+    }
   }).catch(function(err) {
     console.error(err);
     res.status(401).send("Could not login!");
